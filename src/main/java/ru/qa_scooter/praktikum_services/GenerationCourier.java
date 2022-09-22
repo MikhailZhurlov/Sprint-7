@@ -11,23 +11,31 @@ public class GenerationCourier {
         );
     }
 
-    public static Courier getDefault(){
-        return new Courier("mishka5455405", "5455405", "petushich");
+    public static Courier getRandomCourierWithoutLogin(){
+        return new Courier(
+                RandomStringUtils.randomAlphanumeric(0),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10)
+        );
     }
 
-    public static Courier getWithoutLogin() {
-        return new Courier("", "555405", "petka");
-    }
-
-    public static Courier getWithoutPassword() {
-        return new Courier("mishka55405", "", "petka");
-    }
-
-    public static Courier getRight() {
-        return new Courier ("lolik", "1234", "saskes");
+    public static Courier getRandomCourierWithoutPass(){
+        return new Courier(
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(0),
+                RandomStringUtils.randomAlphanumeric(10)
+        );
     }
 
     public static Courier getNonExistentLogin(){
-        return new Courier("lalok04", "cdsf","dsdf");
+        return new Courier(
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10),
+                RandomStringUtils.randomAlphanumeric(10)
+        );
+    }
+
+    public static Courier getDefault(){
+        return new Courier("z7FhyHVRckjs", "6p7qKKjmLdk", "petushichk");
     }
 }

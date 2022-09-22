@@ -8,10 +8,9 @@ import io.restassured.response.ValidatableResponse;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-
-
 import static io.restassured.RestAssured.given;
 import static org.apache.http.HttpStatus.*;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.*;
 import static ru.qa_scooter.praktikum_services.ErrorMessage.BAD_MESSAGE;
 import static ru.qa_scooter.praktikum_services.ErrorMessage.CONFLICT_MESSAGE;
@@ -22,7 +21,7 @@ public class CourierTest {
   private int courierId;
 
   @Before
-  public void Setup(){
+  public void setup(){
     courierClient = new CourierClient();
   }
 
@@ -37,8 +36,7 @@ public class CourierTest {
     public void createCourierTest(){
       courier = GenerationCourier.getRandomCourier();
       ValidatableResponse response = CourierClient.create(courier);
-      int statusCode = response.extract().statusCode();
-      assertEquals(SC_CREATED, statusCode);
+      response.statusCode(SC_CREATED);
       boolean isOk = response.extract().path("ok");
       assertTrue(isOk);
   }
@@ -46,11 +44,11 @@ public class CourierTest {
   @Test
   @DisplayName("The courier cannot be registered")
   @Description("Service return 400 bad request,when client create courier with double login")
+  //Баг с текстом ошибки.
     public void createDoubleCourierTest(){
-      courier = GenerationCourier.getDefault();
+      courier = GenerationCourier.getRandomCourier();
       ValidatableResponse response = CourierClient.create(courier);
-      int statusCode = response.extract().statusCode();
-      assertEquals(SC_CREATED, statusCode);
+      response.statusCode(SC_CREATED);
       boolean isOk = response.extract().path("ok");
       assertTrue(isOk);
 
@@ -59,33 +57,24 @@ public class CourierTest {
        assertNotNull(courierId);
 
       ValidatableResponse doubleResponse = CourierClient.create(courier);
-      int DoubleStatusCode = doubleResponse.extract().statusCode();
-      assertEquals(SC_CONFLICT, DoubleStatusCode);
-      String isMessage = doubleResponse.extract().path("message");
-      assertEquals(CONFLICT_MESSAGE, isMessage);
+      doubleResponse.statusCode(SC_CONFLICT).and().assertThat().body("message", is(CONFLICT_MESSAGE));
   }
 
   @Test
   @DisplayName("Create Courier without login")
   @Description("Service return 400 bad request,when Courier create without field login")
   public void createWithoutLogin(){
-    courier = GenerationCourier.getWithoutLogin();
+    courier = GenerationCourier.getRandomCourierWithoutLogin();
     ValidatableResponse response = CourierClient.create(courier);
-    int statusCode = response.extract().statusCode();
-    assertEquals(SC_BAD_REQUEST, statusCode);
-    String isMessage = response.extract().path("message");
-    assertEquals(BAD_MESSAGE, isMessage);
+    response.statusCode(SC_BAD_REQUEST).and().assertThat().body("message", is(BAD_MESSAGE));
   }
 
   @Test
   @DisplayName("Create Courier without password")
   @Description("Service return 400 bad request,when Courier create without field password")
   public void createWithoutPassword(){
-    courier = GenerationCourier.getWithoutPassword();
+    courier = GenerationCourier.getRandomCourierWithoutPass();
     ValidatableResponse response = CourierClient.create(courier);
-    int statusCode = response.extract().statusCode();
-    assertEquals(SC_BAD_REQUEST, statusCode);
-    String isMessage = response.extract().path("message");
-    assertEquals(BAD_MESSAGE, isMessage);
+    response.statusCode(SC_BAD_REQUEST).and().assertThat().body("message", is(BAD_MESSAGE));
   }
 }
